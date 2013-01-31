@@ -1,0 +1,128 @@
+<html>
+  <head>
+  	<title>Masterwork Project</title>
+  	<style type="text/css">
+  		body {background-color: DeepSkyBlue;
+  			  color: DeepPink;}
+  	</style>
+  	
+  	<script language="javascript">
+  		function getXMLHttpReq()
+			{ var req = null;
+			
+			if (window.XMLHttpRequest)
+			   req = new XMLHttpRequest();
+			else if (window.ActiveXObject)
+			   req = new ActiveXObject(Microsoft.XMLHTTP);
+			return req;
+			}
+		function getFormValues(className, prof, book)
+			{
+			className=document.getElementById("class").value;
+			prof=document.getElementById("professor").value;
+			book=document.getElementById("book").value;
+			}
+			
+		function addNode()
+			{ var req = getXMLHttpReq();
+			
+			var className=document.getElementById("class").value;
+			var prof=document.getElementById("professor").value;
+			var book=document.getElementById("book").value;
+			
+			dataStr= '{"Class name": "' + className + '", "Professor": "' +
+					prof + '", "Book": "' + book + '"}'
+			if (req==null)
+				return 1;
+			
+			req.open("Post", "http://localhost:7474/db/data/node", true);
+			
+			req.onreadystatechange = function()
+			   {
+			   if(req.readyState == 4)
+				  {
+				  if(req.status == 200)
+					 document.getElementById('responseSpot').innerHTML = req.responseText;
+				  else
+					 document.getElementById('responseSpot').innerHTML = "Error Status: " + 
+					req.status + "<br />Error Description: " + req.statusText;
+				  }
+			   }
+			
+			req.setRequestHeader("Content-type", "application/json");
+			req.send(dataStr);
+			return 0;
+			
+			}
+			
+			function getNode()
+			{ var req = getXMLHttpReq();
+		
+			if (req==null)
+				return 1;
+			
+			req.open("GET", "http://localhost:7474/db/data/node/1", true);
+			
+			req.onreadystatechange = function()
+			   {
+			   if(req.readyState == 4)
+				  {
+				  if(req.status == 200)
+					 document.getElementById('responseSpot').innerHTML = req.responseText;
+				  else
+					 document.getElementById('responseSpot').innerHTML = "Error Status: " + 
+					req.status + "<br />Error Description: " + req.statusText;
+				  }
+			   }
+			
+			req.setRequestHeader("Content-type", "application/json");
+			req.send();
+			return 0;
+			
+			}
+			
+			function delNode()
+			{ var req = getXMLHttpReq();
+		
+			if (req==null)
+				return 1;
+			var nodeId=document.getElementById("delete").value
+			var url='http://localhost:7474/db/data/node/' + nodeId
+			req.open("DELETE", url, true);
+			
+			req.onreadystatechange = function()
+			   {
+			   if(req.readyState == 4)
+				  {
+				  if(req.status == 200)
+					 document.getElementById('responseSpot').innerHTML = req.responseText;
+				  else
+					 document.getElementById('responseSpot').innerHTML = "Error Status: " + 
+					req.status + "<br />Error Description: " + req.statusText;
+				  }
+			   }
+			
+			req.setRequestHeader("Content-type", "application/json");
+			req.send();
+			return 0;
+			
+			}
+			
+  	</script>
+
+  </head>
+
+  <body>
+  	<h1><center>Chelsey's Masterwork Project<center></h1>
+  	<br/><br/>
+  	Class Name:<input type="text" id="class" name="class" size=20/>
+  	Professor:<input type="text" id="professor" name="professor" size=20/>
+  	Book Used:<input type="text" id="book" name="book" size=20/>
+  	<input type="button" name="add" value= "Add Node" onclick="addNode()"/><br/>
+  	<input type="button" name="get" value= "Get Node" onclick="getNode()"/><br/>
+  	Node to Delete:<input type="text" id="delete" size=2/>
+  	<input type="button" name="del" value= "Delete Node" onclick="delNode()"/><br/>
+  	<div id="responseSpot"></div>
+  </body>
+
+</html>
