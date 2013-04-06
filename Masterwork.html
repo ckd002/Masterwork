@@ -5,6 +5,7 @@
   		body {background-color: DeepSkyBlue;
   			  color: DeepPink;}
   	</style>
+  	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
   	
   	<script language="javascript">
   		function getXMLHttpReq()
@@ -26,11 +27,12 @@
 		function addNode()
 			{ var req = getXMLHttpReq();
 			
+			var studentName=document.getElementById("student").value;
 			var className=document.getElementById("class").value;
 			var prof=document.getElementById("professor").value;
 			var book=document.getElementById("book").value;
 			
-			dataStr= '{"Class name": "' + className + '", "Professor": "' +
+			dataStr= '{"Student name": "' + studentName + '","Class name": "' + className + '", "Professor": "' +
 					prof + '", "Book": "' + book + '"}'
 			if (req==null)
 				return 1;
@@ -58,10 +60,13 @@
 			function getNode()
 			{ var req = getXMLHttpReq();
 		
+			var nodeId=document.getElementById("get").value
+			var url='http://localhost:7474/db/data/node/' + nodeId
+			
 			if (req==null)
 				return 1;
 			
-			req.open("GET", "http://localhost:7474/db/data/node/1", true);
+			req.open("GET", url, true);
 			
 			req.onreadystatechange = function()
 			   {
@@ -108,20 +113,128 @@
 			
 			}
 			
+			function queryGraph(query)
+			{
+			/*var req = getXMLHttpReq();
+		
+			if (req==null)
+				return 1;
+		
+			var url='http://localhost:7474/db/data/cypher'
+		
+			var sendData='"query" : "start root= node(*) return root;"'
+ 
+			req.open("POST", url, true);
+			
+			req.onreadystatechange = function()
+			   {
+			   if(req.readyState == 4)
+				  {
+				  if(req.status == 200)
+					 document.getElementById('responseSpot').innerHTML = req.responseText;
+				  else
+					 document.getElementById('responseSpot').innerHTML = "Error Status: " + 
+					req.status + "<br />Error Description: " + req.statusText;
+				  }
+			   }
+			
+			req.setRequestHeader('Accept', 'application/json');
+			req.send(sendData);
+			return 0;*/
+			$.ajax({
+				type:"POST",
+				url: "http://localhost:7474/db/data/cypher",
+				accepts: "application/json",
+				dataType:"json",
+				data:{
+					"query" : "start root= node(*) return root;",
+					"params" : {}
+				},
+				success: function(data, textStatus, jqXHR)
+					{
+					document.getElementById('responseSpot').innerHTML = data.data[0][0].data.name;
+					},
+				error:function(jqXHR, textStatus, errorThrown){
+ 				alert(textStatus);}
+ 			});//end of placelist ajax
+ 			
+ 			}
+			
+			function showNodes()
+			{
+			var req = getXMLHttpReq();
+		
+			if (req==null)
+				return 1;
+		
+			var url='http://localhost:7474/db/data/index/node'
+			
+			req.open("GET", url, true);
+			
+			req.onreadystatechange = function()
+			   {
+			   if(req.readyState == 4)
+				  {
+				  if(req.status == 200)
+					 document.getElementById('responseSpot').innerHTML = req.responseText;
+				  else
+					 document.getElementById('responseSpot').innerHTML = "Error Status: " + 
+					req.status + "<br />Error Description: " + req.statusText;
+				  }
+			   }
+			
+			req.setRequestHeader("Content-type", "application/json");
+			req.send();
+			return 0;
+			}
+			
   	</script>
 
   </head>
 
   <body>
-  	<h1><center>Chelsey's Masterwork Project<center></h1>
+  
+  	<h1><center>Chelsey's Book Exchange<center></h1>
   	<br/><br/>
-  	Class Name:<input type="text" id="class" name="class" size=20/>
-  	Professor:<input type="text" id="professor" name="professor" size=20/>
-  	Book Used:<input type="text" id="book" name="book" size=20/>
+  	<table>
+  		<caption><h2>Have a book to sell?</h2></caption>
+  	  <tr>
+  	    <td>Student Name:</td>
+  	    <td><input type="text" id="student" name="student" size=20/><td>
+  	  </tr>
+  	  
+  	  <tr>
+  	    <td>Email:</td>
+  	    <td><input type="text" id="email" name="email" size=20/></td>
+  	  </tr>
+  	  
+  	  <tr>
+  	  	<td>Class Name:</td>
+  	  	<td><input type="text" id="class" name="class" size=20/></td>
+  	  </tr>
+  	  
+  	  <tr>
+  	  	<td>Professor:</td>
+  	  	<td><input type="text" id="professor" name="professor" size=20/></td>
+  	  </tr>
+  	  
+  	   <tr>
+  	  	<td>Book Used:</td>
+  	  	<td><input type="text" id="book" name="book" size=20/></td>
+  	  </tr>
+  	</table>
+  	
   	<input type="button" name="add" value= "Add Node" onclick="addNode()"/><br/>
+  	
+  	 Node to Get:<input type="text" id="get" size=2/>
   	<input type="button" name="get" value= "Get Node" onclick="getNode()"/><br/>
+  	
   	Node to Delete:<input type="text" id="delete" size=2/>
   	<input type="button" name="del" value= "Delete Node" onclick="delNode()"/><br/>
+  	
+
+  	<input type="button" name="query" value= "Query Graph" onclick="queryGraph()"/><br/>
+  	<input type="button" name="show" value= "Show Nodes" onclick="showNodes()"/><br/>
   	<div id="responseSpot"></div>
   </body>
 
