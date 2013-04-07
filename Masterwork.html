@@ -127,12 +127,12 @@
 				accepts: "application/json",
 				dataType:"json",
 				data:{
-					"query" : "start n= node(*) where n.Book= 'Strategic Management' return n;",
+					"query" : "start n= node(*) where n.Book= '" + book + "' return n;",
 					"params" : {}
 				},
 				success: function(data, textStatus, jqXHR)
 					{
-					document.getElementById('displaybooks').innerHTML = data.data;
+					displayResults(data);
 					},
 				error:function(jqXHR, textStatus, errorThrown){
  				alert(textStatus);}
