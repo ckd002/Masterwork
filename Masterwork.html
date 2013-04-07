@@ -4,6 +4,16 @@
   	<style type="text/css">
   		body {background-color: DeepSkyBlue;
   			  color: DeepPink;}
+  		.left{width: 49.7%;
+  		      height: 100%;
+  			  float: left;
+  			  border-top-style:solid;
+  			  border-right-style: solid;}
+  		.right{width:49.7%;
+  			   height: 100%;
+  			   float: right;
+  			   border-top-style:solid;
+  			   border-left-style: solid;}
   	</style>
   	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
   	
@@ -17,23 +27,18 @@
 			   req = new ActiveXObject(Microsoft.XMLHTTP);
 			return req;
 			}
-		function getFormValues(className, prof, book)
-			{
-			className=document.getElementById("class").value;
-			prof=document.getElementById("professor").value;
-			book=document.getElementById("book").value;
-			}
 			
 		function addNode()
 			{ var req = getXMLHttpReq();
 			
 			var studentName=document.getElementById("student").value;
+			var email=document.getElementById("email").value;
 			var className=document.getElementById("class").value;
 			var prof=document.getElementById("professor").value;
 			var book=document.getElementById("book").value;
 			
-			dataStr= '{"Student name": "' + studentName + '","Class name": "' + className + '", "Professor": "' +
-					prof + '", "Book": "' + book + '"}'
+			dataStr= '{"Student": "' + studentName + '","Email": "' + email + '", "Class": "' 
+				+ className + '", "Professor": "' + prof + '", "Book": "' + book + '"}'
 			if (req==null)
 				return 1;
 			
@@ -44,9 +49,9 @@
 			   if(req.readyState == 4)
 				  {
 				  if(req.status == 200)
-					 document.getElementById('responseSpot').innerHTML = req.responseText;
+					 document.getElementById('rmakechanges').innerHTML = req.responseText;
 				  else
-					 document.getElementById('responseSpot').innerHTML = "Error Status: " + 
+					 document.getElementById('makechanges').innerHTML = "Error Status: " + 
 					req.status + "<br />Error Description: " + req.statusText;
 				  }
 			   }
@@ -57,7 +62,7 @@
 			
 			}
 			
-			function getNode()
+		function getNode()
 			{ var req = getXMLHttpReq();
 		
 			var nodeId=document.getElementById("get").value
@@ -73,9 +78,9 @@
 			   if(req.readyState == 4)
 				  {
 				  if(req.status == 200)
-					 document.getElementById('responseSpot').innerHTML = req.responseText;
+					 document.getElementById('makechanges').innerHTML = req.responseText;
 				  else
-					 document.getElementById('responseSpot').innerHTML = "Error Status: " + 
+					 document.getElementById('makechanges').innerHTML = "Error Status: " + 
 					req.status + "<br />Error Description: " + req.statusText;
 				  }
 			   }
@@ -86,7 +91,7 @@
 			
 			}
 			
-			function delNode()
+		function delNode()
 			{ var req = getXMLHttpReq();
 		
 			if (req==null)
@@ -100,9 +105,9 @@
 			   if(req.readyState == 4)
 				  {
 				  if(req.status == 200)
-					 document.getElementById('responseSpot').innerHTML = req.responseText;
+					 document.getElementById('makechanges').innerHTML = req.responseText;
 				  else
-					 document.getElementById('responseSpot').innerHTML = "Error Status: " + 
+					 document.getElementById('makechanges').innerHTML = "Error Status: " + 
 					req.status + "<br />Error Description: " + req.statusText;
 				  }
 			   }
@@ -113,34 +118,30 @@
 			
 			}
 			
-			function queryGraph(query)
+		function queryGraph(query)
 			{
-			/*var req = getXMLHttpReq();
-		
-			if (req==null)
-				return 1;
-		
-			var url='http://localhost:7474/db/data/cypher'
-		
-			var sendData='"query" : "start root= node(*) return root;"'
- 
-			req.open("POST", url, true);
+			var book=document.getElementById('booktofind').value;
+			$.ajax({
+				type:"POST",
+				url: "http://localhost:7474/db/data/cypher",
+				accepts: "application/json",
+				dataType:"json",
+				data:{
+					"query" : "start n= node(*) where n.Book= 'Strategic Management' return n;",
+					"params" : {}
+				},
+				success: function(data, textStatus, jqXHR)
+					{
+					document.getElementById('displaybooks').innerHTML = data.data;
+					},
+				error:function(jqXHR, textStatus, errorThrown){
+ 				alert(textStatus);}
+ 			});//end of placelist ajax
+ 			
+ 			}
 			
-			req.onreadystatechange = function()
-			   {
-			   if(req.readyState == 4)
-				  {
-				  if(req.status == 200)
-					 document.getElementById('responseSpot').innerHTML = req.responseText;
-				  else
-					 document.getElementById('responseSpot').innerHTML = "Error Status: " + 
-					req.status + "<br />Error Description: " + req.statusText;
-				  }
-			   }
-			
-			req.setRequestHeader('Accept', 'application/json');
-			req.send(sendData);
-			return 0;*/
+		function showNodes()
+			{
 			$.ajax({
 				type:"POST",
 				url: "http://localhost:7474/db/data/cypher",
@@ -152,90 +153,96 @@
 				},
 				success: function(data, textStatus, jqXHR)
 					{
-					document.getElementById('responseSpot').innerHTML = data.data[0][0].data.name;
+					displayResults(data);
+					
 					},
 				error:function(jqXHR, textStatus, errorThrown){
  				alert(textStatus);}
  			});//end of placelist ajax
- 			
- 			}
 			
-			function showNodes()
-			{
-			var req = getXMLHttpReq();
-		
-			if (req==null)
-				return 1;
-		
-			var url='http://localhost:7474/db/data/index/node'
-			
-			req.open("GET", url, true);
-			
-			req.onreadystatechange = function()
-			   {
-			   if(req.readyState == 4)
-				  {
-				  if(req.status == 200)
-					 document.getElementById('responseSpot').innerHTML = req.responseText;
-				  else
-					 document.getElementById('responseSpot').innerHTML = "Error Status: " + 
-					req.status + "<br />Error Description: " + req.statusText;
-				  }
-			   }
-			
-			req.setRequestHeader("Content-type", "application/json");
-			req.send();
-			return 0;
 			}
+			
+		function displayResults(data)
+			{
+			var table = "<table border=1>";
+			table+= "<tr><th>Name</th><th>Email</th><th>Professor</th><th>Class</th><th>Book</th></tr>"
+			
+			for (var i=0, len=data.data.length; i < len; i++)
+				{
+				table+= "<tr>";
+				table+= "<td>" + data.data[i][0].data.Student + "</td>";
+				table+= "<td>" + data.data[i][0].data.Email + "</td>";
+				table+= "<td>" + data.data[i][0].data.Professor + "</td>";
+				table+= "<td>" + data.data[i][0].data.Class + "</td>";
+				table+= "<td>" + data.data[i][0].data.Book + "</td>";
+				table+= "</tr>";
+
+				}
+			table += "</table>";
+			document.getElementById('displaybooks').innerHTML= table;
+			}
+
 			
   	</script>
 
   </head>
 
   <body>
-  
   	<h1><center>Chelsey's Book Exchange<center></h1>
-  	<br/><br/>
-  	<table>
-  		<caption><h2>Have a book to sell?</h2></caption>
-  	  <tr>
-  	    <td>Student Name:</td>
-  	    <td><input type="text" id="student" name="student" size=20/><td>
-  	  </tr>
-  	  
-  	  <tr>
-  	    <td>Email:</td>
-  	    <td><input type="text" id="email" name="email" size=20/></td>
-  	  </tr>
-  	  
-  	  <tr>
-  	  	<td>Class Name:</td>
-  	  	<td><input type="text" id="class" name="class" size=20/></td>
-  	  </tr>
-  	  
-  	  <tr>
-  	  	<td>Professor:</td>
-  	  	<td><input type="text" id="professor" name="professor" size=20/></td>
-  	  </tr>
-  	  
-  	   <tr>
-  	  	<td>Book Used:</td>
-  	  	<td><input type="text" id="book" name="book" size=20/></td>
-  	  </tr>
-  	</table>
   	
-  	<input type="button" name="add" value= "Add Node" onclick="addNode()"/><br/>
-  	
-  	 Node to Get:<input type="text" id="get" size=2/>
-  	<input type="button" name="get" value= "Get Node" onclick="getNode()"/><br/>
-  	
-  	Node to Delete:<input type="text" id="delete" size=2/>
-  	<input type="button" name="del" value= "Delete Node" onclick="delNode()"/><br/>
-  	
+  	<div class=left>
+  	<center><h2>Have a book to sell?</h2></center>
+		<table>
+		  <tr>
+			<td>Student Name:</td>
+			<td><input type="text" id="student" name="student" size=20/><td>
+		  </tr>
+		  
+		  <tr>
+			<td>Email:</td>
+			<td><input type="text" id="email" name="email" size=20/></td>
+		  </tr>
+		  
+		  <tr>
+			<td>Class Name:</td>
+			<td><input type="text" id="class" name="class" size=20/></td>
+		  </tr>
+		  
+		  <tr>
+			<td>Professor:</td>
+			<td><input type="text" id="professor" name="professor" size=20/></td>
+		  </tr>
+		  
+		   <tr>
+			<td>Book Used:</td>
+			<td><input type="text" id="book" name="book" size=20/></td>
+		  </tr>
+		</table>
+		
+		<input type="button" name="add" value= "Add Book to Database" onclick="addNode()"/><br/>
+		
+		 Node to Get:<input type="text" id="get" size=2/>
+		<input type="button" name="get" value= "Get Node" onclick="getNode()"/><br/>
+		
+		Node to Delete:<input type="text" id="delete" size=2/>
+		<input type="button" name="del" value= "Delete Node" onclick="delNode()"/><br/>
+		
+		<div id="makechanges"></div>
+	</div>
+	
+  	<div class= right>
+  		<center>
+  			<h2>Looking for a book?</h2>
+  		
+  			<input type="button" name="query" value= "Query Graph" onclick="queryGraph()"/>
+  			<input type="button" name="show" value= "Show All Books" onclick="showNodes()"/><br/><br/>
+  			
+  			Book to Find:<input type="text" id="booktofind" name="booktofind" size=20/>
+  			<br/><br/>
+  		</center>
 
-  	<input type="button" name="query" value= "Query Graph" onclick="queryGraph()"/><br/>
-  	<input type="button" name="show" value= "Show Nodes" onclick="showNodes()"/><br/>
-  	<div id="responseSpot"></div>
+  		<div id="displaybooks"></div>
+  	</div>
   </body>
 
 </html>
