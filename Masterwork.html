@@ -4,16 +4,7 @@
   	<style type="text/css">
   		body {background-color: DeepSkyBlue;
   			  color: DeepPink;}
-  		.left{width: 49.7%;
-  		      height: 100%;
-  			  float: left;
-  			  border-top-style:solid;
-  			  border-right-style: solid;}
-  		.right{width:49.7%;
-  			   height: 100%;
-  			   float: right;
-  			   border-top-style:solid;
-  			   border-left-style: solid;}
+  		
   	</style>
   	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
   	
@@ -64,15 +55,15 @@
 			
 		function getNode()
 			{ var req = getXMLHttpReq();
-		
+
 			var nodeId=document.getElementById("get").value
 			var url='http://localhost:7474/db/data/node/' + nodeId
-			
+
 			if (req==null)
 				return 1;
-			
+
 			req.open("GET", url, true);
-			
+
 			req.onreadystatechange = function()
 			   {
 			   if(req.readyState == 4)
@@ -84,30 +75,29 @@
 					req.status + "<br />Error Description: " + req.statusText;
 				  }
 			   }
-			
+
 			req.setRequestHeader("Content-type", "application/json");
 			req.send();
 			return 0;
-			
+
 			}
 			
-		function delNode()
+		function delNode(url)
 			{ var req = getXMLHttpReq();
 		
 			if (req==null)
 				return 1;
-			var nodeId=document.getElementById("delete").value
-			var url='http://localhost:7474/db/data/node/' + nodeId
+			
 			req.open("DELETE", url, true);
 			
 			req.onreadystatechange = function()
 			   {
 			   if(req.readyState == 4)
 				  {
-				  if(req.status == 200)
-					 document.getElementById('makechanges').innerHTML = req.responseText;
+				  if(req.status == 204)
+					 document.getElementById('displaybooks').innerHTML =  "Bood Successfully Deleted";
 				  else
-					 document.getElementById('makechanges').innerHTML = "Error Status: " + 
+					 document.getElementById('displaybooks').innerHTML = "Error Status: " + 
 					req.status + "<br />Error Description: " + req.statusText;
 				  }
 			   }
@@ -199,11 +189,13 @@
 				table+= "<td>" + data.data[i][0].data.Class + "</td>";
 				table+= "<td>" + data.data[i][0].data.Book + "</td>";
 				if (data.data[i][0].data.Student==document.getElementById("findstudent").value)
-					table+= '<td><input type="button" name="del" value= "Delete Book" onclick="delete()"/></td>'
+					table+= "<td><input type=\"button\" name=\"del\" value= \"Delete Book\" onclick=\"delNode(\'" + data.data[i][0].self + "\')\"/></td>";
+				
 				table+= "</tr>";
 
 				}
 			table += "</table>";
+			
 			document.getElementById('displaybooks').innerHTML= table;
 			}
 
@@ -215,60 +207,59 @@
   <body>
   	<h1><center>Chelsey's Book Exchange<center></h1>
   	
-  	<div class=left>
-  	<center><h2>Have a book to sell?</h2></center>
-		<table>
-		  <tr>
-			<td>Student Name:</td>
-			<td><input type="text" id="student" name="student" size=20/><td>
-		  </tr>
-		  
-		  <tr>
-			<td>Email:</td>
-			<td><input type="text" id="email" name="email" size=20/></td>
-		  </tr>
-		  
-		  <tr>
-			<td>Class Name:</td>
-			<td><input type="text" id="class" name="class" size=20/></td>
-		  </tr>
-		  
-		  <tr>
-			<td>Professor:</td>
-			<td><input type="text" id="professor" name="professor" size=20/></td>
-		  </tr>
-		  
-		   <tr>
-			<td>Book Used:</td>
-			<td><input type="text" id="book" name="book" size=20/></td>
-		  </tr>
-		</table>
-		
-		<input type="button" name="add" value= "Add Book to Database" onclick="addNode()"/><br/>
-		
-		 Node to Get:<input type="text" id="get" size=2/>
-		<input type="button" name="get" value= "Get Node" onclick="getNode()"/><br/>
-		
-		Node to Delete:<input type="text" id="delete" size=2/>
-		<input type="button" name="del" value= "Delete Node" onclick="delNode()"/><br/>
-		
-		<div id="makechanges"></div>
-	</div>
-	
-  	<div class= right>
-  		<center>
-  			<h2>Looking for a book?</h2>
-  		
-  			
-  			<input type="button" name="show" value= "Show All Books" onclick="showNodes()"/><br/><br/>
-  			
-  			Book to Find:<input type="text" id="booktofind" name="booktofind" size=20/><input type="button" name="query" value= "Find Book" onclick="queryGraph()"/><br/><br/>
-  			Your Name:<input type="text" id="findstudent" name="findstudent" size=20/> <input type="button" name="query" value= "Show My Books" onclick="getbyname()"/>
-  			<br/><br/>
-  		</center>
+  	<table width="100%">
+  		<tr>
+  			<td><center><h2>Have a book to sell?</h2></center></td>
+  			<td><center><h2>Looking for a book?</h2></center></td>
+  				<tr>
+  					<td>
+						<table>
+						  <tr>
+							<td>Student Name:</td>
+							<td><input type="text" id="student" name="student" size=20/><td>
+						  </tr>
+						  
+						  <tr>
+							<td>Email:</td>
+							<td><input type="text" id="email" name="email" size=20/></td>
+						  </tr>
+						  
+						  <tr>
+							<td>Class Name:</td>
+							<td><input type="text" id="class" name="class" size=20/></td>
+						  </tr>
+						  
+						  <tr>
+							<td>Professor:</td>
+							<td><input type="text" id="professor" name="professor" size=20/></td>
+						  </tr>
+						  
+						   <tr>
+							<td>Book Used:</td>
+							<td><input type="text" id="book" name="book" size=20/></td>
+						  </tr>
+						</table>
+						
+						<input type="button" name="add" value= "Add Book to Database" onclick="addNode()"/><br/>
+						
+						
+						<div id="makechanges"></div>
+					</td>
+					
+					<td>
+						<center>
+						<input type="button" name="show" value= "Show All Books" onclick="showNodes()"/><br/><br/>
+						
+						Book to Find:<input type="text" id="booktofind" name="booktofind" size=20/><input type="button" name="query" value= "Find Book" onclick="queryGraph()"/><br/><br/>
+						Your Name:<input type="text" id="findstudent" name="findstudent" size=20/> <input type="button" name="query" value= "Show My Books" onclick="getbyname()"/>
+						<br/><br/>
+					
+			
+						<div id="displaybooks"></div>
+						</center>
+					</td>
+				</tr>
 
-  		<div id="displaybooks"></div>
-  	</div>
   </body>
 
 </html>
