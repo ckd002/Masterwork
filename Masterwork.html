@@ -162,6 +162,29 @@
 			
 			}
 			
+		function getbyname()
+			{
+			var sname=document.getElementById("findstudent").value;
+			$.ajax({
+				type:"POST",
+				url: "http://localhost:7474/db/data/cypher",
+				accepts: "application/json",
+				dataType:"json",
+				data:{
+					"query" : "start n= node(*) where n.Student= '" + sname + "'return n;",
+					"params" : {}
+				},
+				success: function(data, textStatus, jqXHR)
+					{
+					displayResults(data);
+					
+					},
+				error:function(jqXHR, textStatus, errorThrown){
+ 				alert(textStatus);}
+ 			});//end of placelist ajax
+			
+			}
+			
 		function displayResults(data)
 			{
 			var table = "<table border=1>";
@@ -175,6 +198,8 @@
 				table+= "<td>" + data.data[i][0].data.Professor + "</td>";
 				table+= "<td>" + data.data[i][0].data.Class + "</td>";
 				table+= "<td>" + data.data[i][0].data.Book + "</td>";
+				if (data.data[i][0].data.Student==document.getElementById("findstudent").value)
+					table+= '<td><input type="button" name="del" value= "Delete Book" onclick="delete()"/></td>'
 				table+= "</tr>";
 
 				}
@@ -234,10 +259,11 @@
   		<center>
   			<h2>Looking for a book?</h2>
   		
-  			<input type="button" name="query" value= "Query Graph" onclick="queryGraph()"/>
+  			
   			<input type="button" name="show" value= "Show All Books" onclick="showNodes()"/><br/><br/>
   			
-  			Book to Find:<input type="text" id="booktofind" name="booktofind" size=20/>
+  			Book to Find:<input type="text" id="booktofind" name="booktofind" size=20/><input type="button" name="query" value= "Find Book" onclick="queryGraph()"/><br/><br/>
+  			Your Name:<input type="text" id="findstudent" name="findstudent" size=20/> <input type="button" name="query" value= "Show My Books" onclick="getbyname()"/>
   			<br/><br/>
   		</center>
 
