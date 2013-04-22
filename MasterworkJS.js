@@ -16,7 +16,7 @@
 			var className=document.getElementById("class").value;
 			var prof=document.getElementById("professor").value;
 			var book=document.getElementById("book").value;
-			
+		
 			dataStr= '{"Student": "' + studentName + '","Email": "' + email + '", "Class": "' 
 				+ className + '", "Professor": "' + prof + '", "Book": "' + book + '"}'
 			if (req==null)
@@ -29,7 +29,12 @@
 			   if(req.readyState == 4)
 				  {
 				  if(req.status == 201)
+				  	{
 					document.getElementById('makechanges').innerHTML = "Book Successfully Added";
+					document.getElementById('addForm').reset();
+					document.getElementById('displaybooks').innerHTML="";
+					}
+					
 					
 				  else
 					 document.getElementById('makechanges').innerHTML = "Error Status: " + 
@@ -41,35 +46,6 @@
 			req.send(dataStr);
 			return 0;
 			
-			}
-			
-		function getNode()
-			{ var req = getXMLHttpReq();
-
-			var nodeId=document.getElementById("get").value
-			var url='http://localhost:7474/db/data/node/' + nodeId
-
-			if (req==null)
-				return 1;
-
-			req.open("GET", url, true);
-
-			req.onreadystatechange = function()
-			   {
-			   if(req.readyState == 4)
-				  {
-				  if(req.status == 200)
-					 document.getElementById('makechanges').innerHTML = req.responseText;
-				  else
-					 document.getElementById('makechanges').innerHTML = "Error Status: " + 
-					req.status + "<br />Error Description: " + req.statusText;
-				  }
-			   }
-
-			req.setRequestHeader("Content-type", "application/json");
-			req.send();
-			return 0;
-
 			}
 			
 		function delNode(url)
@@ -85,7 +61,11 @@
 			   if(req.readyState == 4)
 				  {
 				  if(req.status == 204)
+				  	{
 					 document.getElementById('displaybooks').innerHTML =  "Book Successfully Deleted";
+					 document.getElementById('makechanges').innerHTML="";
+					}
+					
 				  else
 					 document.getElementById('displaybooks').innerHTML = "Error Status: " + 
 					req.status + "<br />Error Description: " + req.statusText;
@@ -101,22 +81,28 @@
 		function queryGraph(query)
 			{
 			var book=document.getElementById('booktofind').value;
-			$.ajax({
-				type:"POST",
-				url: "http://localhost:7474/db/data/cypher",
-				accepts: "application/json",
-				dataType:"json",
-				data:{
-					"query" : "start n= node(*) where n.Book= '" + book + "' return n;",
-					"params" : {}
-				},
-				success: function(data, textStatus, jqXHR)
-					{
-					displayResults(data);
+			
+			if (book=="")
+				document.getElementById('displaybooks').innerHTML= "Please enter the book title you wish to search";
+			else
+				{
+				$.ajax({
+					type:"POST",
+					url: "http://localhost:7474/db/data/cypher",
+					accepts: "application/json",
+					dataType:"json",
+					data:{
+						"query" : "start n= node(*) where n.Book= '" + book + "' return n;",
+						"params" : {}
 					},
-				error:function(jqXHR, textStatus, errorThrown){
- 				alert(textStatus);}
- 			});//end of placelist ajax
+					success: function(data, textStatus, jqXHR)
+						{
+						displayResults(data);
+						},
+					error:function(jqXHR, textStatus, errorThrown){
+					alert(textStatus);}
+				});//end of placelist ajax
+				}
  			
  			}
 			
@@ -145,23 +131,29 @@
 		function getbyname()
 			{
 			var sname=document.getElementById("findstudent").value;
-			$.ajax({
-				type:"POST",
-				url: "http://localhost:7474/db/data/cypher",
-				accepts: "application/json",
-				dataType:"json",
-				data:{
-					"query" : "start n= node(*) where n.Student= '" + sname + "'return n;",
-					"params" : {}
-				},
-				success: function(data, textStatus, jqXHR)
-					{
-					displayResults(data);
-					
+			
+			if (sname=="")
+				document.getElementById('displaybooks').innerHTML= "Please enter your name to find your books";
+			else
+				{
+				$.ajax({
+					type:"POST",
+					url: "http://localhost:7474/db/data/cypher",
+					accepts: "application/json",
+					dataType:"json",
+					data:{
+						"query" : "start n= node(*) where n.Student= '" + sname + "'return n;",
+						"params" : {}
 					},
-				error:function(jqXHR, textStatus, errorThrown){
- 				alert(textStatus);}
- 			});//end of placelist ajax
+					success: function(data, textStatus, jqXHR)
+						{
+						displayResults(data);
+						
+						},
+					error:function(jqXHR, textStatus, errorThrown){
+					alert(textStatus);}
+				});//end of placelist ajax
+				}
 			
 			}
 			
@@ -187,4 +179,7 @@
 			table += "</table>";
 			
 			document.getElementById('displaybooks').innerHTML= table;
+			document.getElementById('makechanges').innerHTML="";
+			document.getElementById('getByName').reset();
+			document.getElementById('findBook').reset();
 			}

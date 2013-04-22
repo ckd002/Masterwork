@@ -1,6 +1,8 @@
+<!doctype html>
 <html>
   <head>
   	<title>Masterwork Project</title>
+  	<meta charset="utf-8"/>
   	
   	<style type="text/css">
   		body {background-color: DeepSkyBlue;
@@ -12,7 +14,9 @@
   </head>
 
   <body>
-  	<h1><center>Chelsey's Book Exchange<center></h1>
+  	<h1><center>Chelsey's Book Exchange<center></h1><hr/>
+  	
+  	<form onSubmit="addNode();return false" id="addForm">
   	
   	<table width="100%">
   		<tr>
@@ -20,25 +24,26 @@
   			<td><center><h2>Looking for a book?</h2></center></td>
   				<tr>
   					<td>
-						<table>
+						<table align="center">
+						
 						  <tr>
 							<td>Student Name:</td>
-							<td><input type="text" id="student" name="student" size=20/><td>
+							<td><input type="text" id="student" name="student" size=20 required placeholder="First Last"/><td>
 						  </tr>
 						  
 						  <tr>
 							<td>Email:</td>
-							<td><input type="text" id="email" name="email" size=20/></td>
+							<td><input type="email" id="email" name="email" size=20 required/></td>
 						  </tr>
 						  
 						  <tr>
 							<td>Class Name:</td>
-							<td><input type="text" id="class" name="class" size=20/></td>
+							<td><input type="text" id="class" name="class" size=20 required/></td>
 						  </tr>
 						  
 						  <tr>
 							<td>Professor:</td>
-							<td><input type="text" id="professor" name="professor" size=20/></td>
+							<td><input type="text" id="professor" name="professor" size=20 required/></td>
 						  </tr>
 						  
 						   <tr>
@@ -47,20 +52,27 @@
 						  </tr>
 						</table>
 						
-						<input type="button" name="add" value= "Add Book to Database" onclick="addNode()"/><br/>
-						
+						<center><input type="submit" name="add" value= "Add Book to Database"/>
+						<input type="reset" value= "Clear Form"/></center>
+	</form>
 						
 						<div id="makechanges"></div>
 					</td>
-					
+	
 					<td>
 						<center>
 						<input type="button" name="show" value= "Show All Books" onclick="showNodes()"/><br/><br/>
 						
-						Book to Find:<input type="text" id="booktofind" name="booktofind" size=20/><input type="button" name="query" value= "Find Book" onclick="queryGraph()"/><br/><br/>
-						Your Name:<input type="text" id="findstudent" name="findstudent" size=20/> <input type="button" name="query" value= "Show My Books" onclick="getbyname()"/>
-						<br/><br/>
-					
+						<form onSubmit="queryGraph();return false" id="findBook">
+							Book to Find:<input type="text" id="booktofind" name="booktofind" size=20/>
+							<input type="submit" name="query" value= "Find Book"/><br/><br/>
+						</form>
+						
+						<form onSubmit="getbyname();return false" id="getByName">
+							Your Name:<input type="text" id="findstudent" name="findstudent" size=20/>
+							<input type="submit" name="query" value= "Show My Books"/>
+							<br/><br/>
+						</form>
 			
 						<div id="displaybooks"></div>
 						</center>
