@@ -1,80 +1,57 @@
-  		function getXMLHttpReq()
-			{ var req = null;
-			
-			if (window.XMLHttpRequest)
-			   req = new XMLHttpRequest();
-			else if (window.ActiveXObject)
-			   req = new ActiveXObject(Microsoft.XMLHTTP);
-			return req;
-			}
-			
 		function addNode()
-			{ var req = getXMLHttpReq();
-			
+			{
 			var studentName=document.getElementById("student").value;
 			var email=document.getElementById("email").value;
 			var className=document.getElementById("class").value;
 			var prof=document.getElementById("professor").value;
 			var book=document.getElementById("book").value;
 		
-			dataStr= '{"Student": "' + studentName + '","Email": "' + email + '", "Class": "' 
-				+ className + '", "Professor": "' + prof + '", "Book": "' + book + '"}'
-			if (req==null)
-				return 1;
-			
-			req.open("Post", "http://localhost:7474/db/data/node", true);
-			
-			req.onreadystatechange = function()
-			   {
-			   if(req.readyState == 4)
-				  {
-				  if(req.status == 201)
-				  	{
+			$.ajax({
+			type: "POST",
+			url: "http://localhost:7474/db/data/node",
+			accepts: "application/json",
+			dataType: "json",
+			data: {
+				"Student": studentName,
+				"Email": email,
+				"Class": className,
+				"Professor": prof,
+				"Book": book
+				},
+			success: function(data, textStatus, jqXHR)
+					{
 					document.getElementById('makechanges').innerHTML = "Book Successfully Added";
 					document.getElementById('addForm').reset();
 					document.getElementById('displaybooks').innerHTML="";
-					}
-					
-					
-				  else
-					 document.getElementById('makechanges').innerHTML = "Error Status: " + 
+					},
+			error:function(jqXHR, textStatus, errorThrown)
+					{
+					document.getElementById('makechanges').innerHTML = "Error Status: " + 
 					req.status + "<br />Error Description: " + req.statusText;
-				  }
-			   }
-			
-			req.setRequestHeader("Content-type", "application/json");
-			req.send(dataStr);
-			return 0;
+					}
+			});
 			
 			}
 			
 		function delNode(url)
-			{ var req = getXMLHttpReq();
-		
-			if (req==null)
-				return 1;
+			{ 
+			var data;
 			
-			req.open("DELETE", url, true);
-			
-			req.onreadystatechange = function()
-			   {
-			   if(req.readyState == 4)
-				  {
-				  if(req.status == 204)
-				  	{
-					 document.getElementById('displaybooks').innerHTML =  "Book Successfully Deleted";
-					 document.getElementById('makechanges').innerHTML="";
+			$.ajax({
+			type: "DELETE",
+			url: url,
+			success: function(data, textStatus, jqXHR)
+					{
+					document.getElementById('displaybooks').innerHTML =  "Book Successfully Deleted";
+					document.getElementById('makechanges').innerHTML="";
+					},
+			error:function(jqXHR, textStatus, errorThrown)
+					{
+					document.getElementById('displaybooks').innerHTML = "Error Status: " + 
+					req.status + "<br />Error Description: " + textStatus;
 					}
-					
-				  else
-					 document.getElementById('displaybooks').innerHTML = "Error Status: " + 
-					req.status + "<br />Error Description: " + req.statusText;
-				  }
-			   }
 			
-			req.setRequestHeader("Content-type", "application/json");
-			req.send();
-			return 0;
+			});//end ajax
 			
 			}
 			
